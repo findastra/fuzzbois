@@ -2,8 +2,14 @@
 // (findastra/fuzzboi-friend, which loads this file from GitHub Pages). One copy of the rules:
 // change them here, nowhere else. Plain script, no modules, so it also works from file://.
 (function(){
-// ---------- trait tables (numbers follow the Procreate layer names) ----------
-const ACC = {1:"Cowboy hat",2:"Joint",3:"Birthday hat",4:"Butterfly",5:"Flower",6:"Crown",7:"Glasses",8:"Cheese",9:"Taco"};
+// ---------- trait tables ----------
+// The rules are Astra's handwritten design notes: art/procreate-export/Fuzzbois-33.png. Follow that
+// sheet over anything else. It says Taco = 8 and Cheese = 9. The Procreate layers were numbered the
+// other way (Cheese 8, Taco 9) and their files keep those names, so code 8 draws acc9.png (the taco)
+// and code 9 draws acc8.png (the cheese).
+const ACC = {1:"Cowboy hat",2:"Joint",3:"Birthday hat",4:"Butterfly",5:"Flower",6:"Crown",7:"Glasses",8:"Taco",9:"Cheese"};
+const LAYER_NAME = {...ACC, 8:"Cheese", 9:"Taco"};   // what the Procreate layer acc<n> is called
+const accLayer = a => "acc" + (a===8 ? 9 : a===9 ? 8 : a);
 const HATS = new Set([1,3,6]);
 const RARE = {1:"Hands",2:"Feet",3:"Eyelashes",4:"Blush"};
 const FILL = {A:["#d6306e","#5ed546","#a86bf0","#bed3e8","#fbf86a"],
@@ -17,14 +23,14 @@ const STACK = ["rare2","fill","outline","acc7","eyes","rare4","rare3","rare1","a
 // every layer the generator can use: [key, Procreate layer name]
 const EXPECTED = [];
 for (const s of "ABC"){ EXPECTED.push(["outline"+s,"Body Style "+s]); for(let i=1;i<=5;i++) EXPECTED.push(["fill"+s+i, s+i]); }
-for (let i=1;i<=9;i++) EXPECTED.push(["acc"+i,`Accessory (${i}): ${ACC[i]}`]);
+for (let i=1;i<=9;i++) EXPECTED.push(["acc"+i,`Accessory (${i}): ${LAYER_NAME[i]}`]);
 for (let i=1;i<=4;i++) EXPECTED.push(["rare"+i,`Rarity (${i}): ${RARE[i]}`]);
 EXPECTED.push(["eyes","Default Eyes"]);
 
-// TEMPORARY letter rule (2026-10-09): no trait uses A–F yet, so a letter counts as its hex
+// TEMPORARY letter rule, a stopgap chosen by Claude on 2026-10-09 (not on Astra's design notes): no trait uses A–F yet, so a letter counts as its hex
 // value minus 10 (A→0 … F→5). The background is still the exact hex code. Replace this when
 // Astra decides what letters mean.
-const LETTER_RULE = "Letters A–F count as 0–5 for now (A=0, B=1, C=2, D=3, E=4, F=5). That’s a temporary rule until letters get their own traits.";
+const LETTER_RULE = "Letters A–F aren’t on the Fuzzboi design notes yet, so for now they count as 0–5 (A=0, B=1, C=2, D=3, E=4, F=5). Your color is exact; the traits may change when letters get their own.";
 function traitDigit(ch){ const v = parseInt(ch,16); return v>9 ? v-10 : v; }
 
 // ---------- decoding ----------
@@ -52,7 +58,6 @@ function decode(input){
     if (rares.length) out.flags.push(["ok",`Rare! Position 6 is 0, and the code contains ${rares.join(", ")} → ${rares.map(r=>RARE[r]).join(" + ")}.`]);
     else out.flags.push(["warn","Position 6 is 0 but no 1–4 appears elsewhere, so no rarity layer applies under the current rule."]);
   }
-  if (accs.includes(8) || accs.includes(9)) out.flags.push(["warn","Your notes say Taco = 8 and Cheese = 9, but the Procreate layers say Cheese (8) and Taco (9). This page follows the layer names."]);
   Object.assign(out.parts,{d,style,color,accs,rares,hasLetters,bg:"#"+code});
   return out;
 }
@@ -69,7 +74,7 @@ function describe(p){
 }
 
 // ---------- rendering ----------
-function needed(p){ return ["fill"+p.style+p.color, "outline"+p.style, "eyes", ...p.accs.map(a=>"acc"+a), ...p.rares.map(r=>"rare"+r)]; }
+function needed(p){ return ["fill"+p.style+p.color, "outline"+p.style, "eyes", ...p.accs.map(accLayer), ...p.rares.map(r=>"rare"+r)]; }
 function missing(p, layers){ return needed(p).filter(k=>!layers.has(k)); }
 
 // Draws the real art from loaded layers. Resizes the canvas to the layer size.
@@ -79,7 +84,7 @@ function drawLayers(cv, p, layers){
   const W = any.naturalWidth, H = any.naturalHeight;
   if (cv.width!==W || cv.height!==H){ cv.width=W; cv.height=H; }
   ctx.fillStyle = p.bg; ctx.fillRect(0,0,W,H);
-  const want = new Set(["fill","outline","eyes", ...p.accs.map(a=>"acc"+a), ...p.rares.map(r=>"rare"+r)]);
+  const want = new Set(["fill","outline","eyes", ...p.accs.map(accLayer), ...p.rares.map(r=>"rare"+r)]);
   for (const slot of STACK){
     if (!want.has(slot)) continue;
     const k = slot==="fill" ? "fill"+p.style+p.color : slot==="outline" ? "outline"+p.style : slot;
@@ -139,5 +144,5 @@ function savePng(cv, name){
   },"image/png"));
 }
 
-window.Fuzzboi = {ACC,HATS,RARE,FILL,OUTLINE,POS,STACK,EXPECTED,LETTER_RULE,traitDigit,decode,describe,needed,missing,drawLayers,drawStandIn,loadImg,loadLayers,savePng};
+window.Fuzzboi = {ACC,LAYER_NAME,accLayer,HATS,RARE,FILL,OUTLINE,POS,STACK,EXPECTED,LETTER_RULE,traitDigit,decode,describe,needed,missing,drawLayers,drawStandIn,loadImg,loadLayers,savePng};
 })();

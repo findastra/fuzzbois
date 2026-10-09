@@ -35,6 +35,8 @@ The page loads every layer in `site/layers/` automatically. A code in the addres
 
 ## The code
 
+**The rules are Astra's handwritten design notes, [`art/procreate-export/Fuzzbois-33.png`](art/procreate-export/Fuzzbois-33.png).** When anything here disagrees with that sheet, the sheet wins.
+
 Positions are read left to right. **For now, letters A–F count as 0–5** (A=0, B=1, C=2, D=3, E=4, F=5) so every hex code makes a Fuzzboi; the background still uses the exact code. This is a temporary rule (2026-10-09) until letters get their own traits.
 
 | Position | Trait | Rule |
@@ -47,17 +49,17 @@ Positions are read left to right. **For now, letters A–F count as 0–5** (A=0
 | 6 | Rare flag | 0 = rare |
 | all six | Background | the code itself, as a hex color |
 
-**Accessories** (numbered as in the Procreate layers): 0 nothing · 1 cowboy hat · 2 joint · 3 birthday hat · 4 butterfly · 5 flower · 6 crown · 7 glasses · 8 cheese · 9 taco. Hats are 1, 3 and 6.
+**Accessories** (from the design notes): 0 nothing · 1 cowboy hat · 2 joint · 3 birthday hat · 4 butterfly · 5 flower · 6 crown · 7 glasses · 8 taco · 9 cheese. Hats are 1, 3 and 6. The Procreate layers were numbered with cheese and taco the other way round, and the layer files keep those names (`acc8.png` is the cheese, `acc9.png` the taco); `site/fuzzboi.js` maps 8 → taco and 9 → cheese.
 
-**Rarities:** 1 hands · 2 feet · 3 eyelashes · 4 blush.
+**Rarities:** 1 hands · 2 feet · 3 eyelashes · 4 blush. From the notes: if position 6 is 0 the Fuzzboi is rare, and it gets every rarity whose number appears in the code ("if whole hash # contains 1, 2, and/or 3 get all!", with blush = 4 added).
 
 Layer order, bottom to top: feet, body fill, body outline, glasses, eyes, blush, eyelashes, hands, taco, cheese, crown, flower, birthday hat, joint, cowboy hat, butterfly.
 
-### Still undecided
+### Not on the design notes yet
 
-- **Letters A–F.** No trait uses them yet. Until that's decided they count as their value minus 10 (A=0 … F=5), set in `site/fuzzboi.js`, and the page says so whenever a code has a letter.
-- **How a rarity is picked.** The generator currently gives every rarity whose number (1–4) appears in positions 1–5 when position 6 is 0. That can't produce some drawn Fuzzbois (a pink cloud with hands), so the real rule is probably different.
-- **Taco vs. cheese numbering.** The design notes say taco 8, cheese 9; the Procreate layers say cheese 8, taco 9. The generator follows the layers.
+- **Letters A–F.** The notes use a hex code as the background color, but give no trait to letters. Until Astra adds them, the pages count a letter as its value minus 10 (A=0 … F=5). That stopgap was chosen by Claude on 2026-10-09, not by Astra; it's in `site/fuzzboi.js`, and the page says so whenever a code has a letter.
+- **Position 6 is 0 but no 1–4 appears.** The notes say a 0 there means rare, but not which rarity it gets if the code has no 1, 2, 3 or 4. The pages show no rarity and say why.
+- A side effect of the rules as written: a cloud body (position 1 is 6–9) can only get hands from a 1 in an accessory slot, so a cloud with hands always wears the cowboy hat.
 
 ## Exporting layers from Procreate
 
