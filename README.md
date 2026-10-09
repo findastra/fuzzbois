@@ -1,5 +1,9 @@
 # Fuzzbois
 
+## 👉 Make your Fuzzboi: **[findastra.github.io/fuzzbois](https://findastra.github.io/fuzzbois/)**
+
+Type any six-digit hex code (like `C0FFEE`) and save that exact Fuzzboi as a PNG. Its pet app is [Fuzzboi Friend](https://findastra.github.io/fuzzboi-friend/) ([repo](https://github.com/findastra/fuzzboi-friend)).
+
 Fuzzy little characters built from a six-digit hash code. Every code picks a body style, a body color, up to three accessories and sometimes a rarity, and the same six digits become the background color. By Astra.
 
 ![Fuzzboi #456900](art/fuzzboi-456900-original.png)
@@ -8,7 +12,7 @@ Fuzzy little characters built from a six-digit hash code. Every code picks a bod
 
 | Folder | What it is |
 |---|---|
-| `site/` | **Fuzzboi Forge** — type a code, get that exact Fuzzboi at 2048×2048 and save it as a PNG. `site/layers/` holds the 32 cut-out layers it stacks. |
+| `site/` | **Fuzzboi Forge**, [live here](https://findastra.github.io/fuzzbois/). Type a code, get that exact Fuzzboi at 2048×2048 and save it as a PNG. `site/fuzzboi.js` holds the rules and drawing (Fuzzboi Friend loads the same file); `site/layers/` holds the 32 cut-out layers it stacks. |
 | `art/procreate-export/` | The original Procreate "PNG Files" export (`Fuzzbois-1.png` … `Fuzzbois-33.png`), navy background baked in. 33 is the design notes page. |
 | `art/banner/` | The Fuzzbois parade banner and the nine sprites cut from it. |
 | `3d/` | The 3D Fuzzboi #456800 (red, crown, taco, blush): Blender source, FBX, Unity package, previews, and the script that builds it. |
@@ -17,7 +21,9 @@ Fuzzy little characters built from a six-digit hash code. Every code picks a bod
 
 ## Run the generator
 
-Browsers won't export a canvas built from `file://` images, so serve the folder:
+The easy way is the website: <https://findastra.github.io/fuzzbois/> (a code in the address, like `#456900`, opens that Fuzzboi). GitHub Pages serves the repo root from `main`; `index.html` there sends visitors on to `site/`.
+
+To run it on your own PC: browsers won't export a canvas built from `file://` images, so serve the folder:
 
 ```sh
 cd site
@@ -29,7 +35,7 @@ The page loads every layer in `site/layers/` automatically. A code in the addres
 
 ## The code
 
-Positions are read left to right. Digits 0–9 only for now.
+Positions are read left to right. **For now, letters A–F count as 0–5** (A=0, B=1, C=2, D=3, E=4, F=5) so every hex code makes a Fuzzboi; the background still uses the exact code. This is a temporary rule (2026-10-09) until letters get their own traits.
 
 | Position | Trait | Rule |
 |---|---|---|
@@ -49,7 +55,7 @@ Layer order, bottom to top: feet, body fill, body outline, glasses, eyes, blush,
 
 ### Still undecided
 
-- **Letters A–F.** Hex codes can contain them, but no trait uses them yet, so the generator rejects them.
+- **Letters A–F.** No trait uses them yet. Until that's decided they count as their value minus 10 (A=0 … F=5), set in `site/fuzzboi.js`, and the page says so whenever a code has a letter.
 - **How a rarity is picked.** The generator currently gives every rarity whose number (1–4) appears in positions 1–5 when position 6 is 0. That can't produce some drawn Fuzzbois (a pink cloud with hands), so the real rule is probably different.
 - **Taco vs. cheese numbering.** The design notes say taco 8, cheese 9; the Procreate layers say cheese 8, taco 9. The generator follows the layers.
 
